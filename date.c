@@ -11,6 +11,5 @@ int main(int argc, char *argv[]) {
 
 	printf(1, "%d-%d-%d %d:%d:%d\n", r.year, r.month, r.day, r.hour, r.minute, r.second);
 
-	// your code to print the time in any format you like...
 	exit();
 }

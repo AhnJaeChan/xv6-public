@@ -93,8 +93,16 @@ sys_uptime(void)
 int
 sys_date(void)
 {
-  struct rtcdate* date;
-  argptr(0, (void*)(&date), sizeof(*date));
-  cmostime(date);
+  struct rtcdate* r;
+
+  // Parse argument, 0 indicates to parse the first argument.
+  // Since the call is date(struct rtcdate*), first argument states the date.
+  if (argptr(0, (void*)(&r), sizeof(*r)) < 0) {
+    return -1;
+  }
+
+  // Call cmostime.
+  cmostime(r);
+
   return 0;
 }
