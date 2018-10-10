@@ -97,7 +97,7 @@ trap(struct trapframe *tf)
       mem = kalloc();
       if (mem == 0) {
         cprintf("trap %d from cpu %d eip %x -- out of memory\n", tf->trapno, cpuid(), tf->eip);
-        return;
+        break;
       }
       memset(mem, 0, PGSIZE);
 
@@ -105,7 +105,7 @@ trap(struct trapframe *tf)
 
       if (mappages(myproc()->pgdir, (char*)a, PGSIZE, V2P(mem), PTE_W | PTE_U) < 0) {
         cprintf("trap %d from cpu %d eip %x -- out of memory (2)\n", tf->trapno, cpuid(), tf->eip);
-        return;
+        break;
       }
 
       break;
