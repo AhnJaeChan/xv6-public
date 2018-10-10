@@ -53,7 +53,7 @@ sys_sbrk(void)
   addr = myproc()->sz;
   cprintf("orig size: %d\n", addr);
   myproc()->sz += n;
-  cprintf("increased size: %d\n", addr);
+  cprintf("increased size: %d\n", myproc()->sz);
 //  if(growproc(n) < 0)
 //    return -1;
   return addr;
