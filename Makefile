@@ -183,6 +183,7 @@ UPROGS=\
 	_zombie\
 	_sysprog\
 	_date\
+	_clear\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
