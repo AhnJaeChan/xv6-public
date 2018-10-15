@@ -184,6 +184,7 @@ UPROGS=\
 	_sysprog\
 	_date\
 	_clear\
+	_alarmtest\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
