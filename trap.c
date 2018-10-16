@@ -57,6 +57,15 @@ trap(struct trapframe *tf)
       release(&tickslock);
     }
     lapiceoi();
+
+    if (myproc() != 0 && (tf->cs & 3) == 3) {
+      myproc()->tickdelta++;
+
+      if (myproc()->tickdelta > myproc()->ticks) {
+        myproc()->tickdelta = 0;
+        myproc()->handler;
+      }
+    }
     break;
   case T_IRQ0 + IRQ_IDE:
     ideintr();
