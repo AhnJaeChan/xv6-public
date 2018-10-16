@@ -62,7 +62,10 @@ trap(struct trapframe *tf)
       myproc()->alarmtickdelta++;
 
       if (myproc()->alarmtickdelta > myproc()->alarmticks) {
-        myproc()->alarmtickdelta = 0;
+        tf->esp -= 4;
+        *(uint*)(tf->esp) = tf->eip;
+        tf->eip = (uint)myproc()->alarmhandler;
+        myproc()->alarmtickdelta = 0;        
       }
     }
     break;
