@@ -114,7 +114,6 @@ found:
 
   // Alarm variable initialization
   p->alarmticks = 0;
-  p->alarmhandler = UNUSED;
   p->alarmtickdelta = 0;
 
   return p;
