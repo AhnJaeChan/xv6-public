@@ -112,6 +112,11 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
+  // Alarm variable initialization
+  p->alarmticks = 0;
+  p->alarmhandler = UNUSED;
+  p->alarmtickdelta = 0;
+
   return p;
 }
 

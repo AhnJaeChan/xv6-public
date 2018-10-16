@@ -63,7 +63,7 @@ trap(struct trapframe *tf)
 
       if (myproc()->alarmtickdelta > myproc()->alarmticks) {
         myproc()->alarmtickdelta = 0;
-        myproc()->alarmhandler;
+        myproc()->alarmhandler = UNUSED;
       }
     }
     break;
