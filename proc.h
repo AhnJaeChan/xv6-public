@@ -51,9 +51,9 @@ struct proc {
   char name[16];               // Process name (debugging)
 
   // Alarm variables
-  int ticks;
-  void (*handler);
-  int tickdelta;
+  int alarmticks;
+  void (*alarmhandler);
+  int alarmtickdelta;
 };
 
 // Process memory is laid out contiguously, low addresses first:

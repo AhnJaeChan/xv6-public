@@ -59,11 +59,11 @@ trap(struct trapframe *tf)
     lapiceoi();
 
     if (myproc() != 0 && (tf->cs & 3) == 3) {
-      myproc()->tickdelta++;
+      myproc()->alarmtickdelta++;
 
-      if (myproc()->tickdelta > myproc()->ticks) {
-        myproc()->tickdelta = 0;
-        myproc()->handler;
+      if (myproc()->alarmtickdelta > myproc()->alarmticks) {
+        myproc()->alarmtickdelta = 0;
+        myproc()->alarmhandler;
       }
     }
     break;
