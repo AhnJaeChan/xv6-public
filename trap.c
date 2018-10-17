@@ -56,18 +56,38 @@ trap(struct trapframe *tf)
       wakeup(&ticks);
       release(&tickslock);
     }
-    lapiceoi();
 
+    // Checks if the process is running 
+    // and checks if it's a timer interrupt by a user process
     if (myproc() != 0 && (tf->cs & 3) == 3) {
+      
+      // Increase tick by 1 since the last call of the if statement below.
+      // alarmtickdelta is initialized to 0 inside allocproc()
       myproc()->alarmtickdelta++;
 
+      // Since alarmticks was set to 10 by alarmtest -> sys_alarm, checks if
+      // alarmtickdelta counted is larger then alarmticks which is 10.
       if (myproc()->alarmtickdelta > myproc()->alarmticks) {
-        tf->esp -= 4;
-        *(uint*)(tf->esp) = tf->eip;
+
+        // Needs to go back to the for loop inside alarmtest's main().
+        // We'll need to set esp to eip which is the main()'s current position
+        // where interrupt was called. (i.e. between the for loops, where it's been called)
+        // Just like T.A.'s hint from the lab class.
+        // I'm not sure about the part where the T.A. mentioned that we need to
+        // Change the instruction to point the next step? I've written it down twice.
+        // Maybe my notes are wrong, leaving it for question.
+        *(uint*)tf->esp = tf->eip;
+
+        // We have to execute the alarmhandler which is 'periodic' function
+        // by setting the eip(next instruction) to the function address.
         tf->eip = (uint)myproc()->alarmhandler;
+
+        // Since "alarm!" was printed, need to set alarmtickdelta to 0 so that the counting starts over.
         myproc()->alarmtickdelta = 0;        
       }
     }
+
+    lapiceoi();
     break;
   case T_IRQ0 + IRQ_IDE:
     ideintr();
