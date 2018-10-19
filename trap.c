@@ -68,6 +68,7 @@ trap(struct trapframe *tf)
       // Since alarmticks was set to 10 by alarmtest -> sys_alarm, checks if
       // alarmtickdelta counted is larger then alarmticks which is 10.
       if (myproc()->alarmtickdelta > myproc()->alarmticks) {
+        tf->esp -= 4;
 
         // Needs to go back to the for loop inside alarmtest's main().
         // We'll need to set esp to eip which is the main()'s current position
