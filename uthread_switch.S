@@ -23,11 +23,11 @@ thread_switch:
 
 	pushal // Save context
 
-    // Two lines from here takes care of current_thread = esp
+    // Two lines from here takes care of current_thread->sp (at the top of the struct) = esp
     movl current_thread, %eax
     movl %esp, (%eax)
 
-    // Two lines from here sets esp = next_thread
+    // Two lines from here sets esp = next_thread->sp (at the top of the struct)
     movl next_thread, %eax
     movl (%eax), %esp
 
