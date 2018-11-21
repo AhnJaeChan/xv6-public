@@ -155,9 +155,8 @@ _forktest: forktest.o $(ULIB)
 	# in order to be able to max out the proc table.
 	$(LD) $(LDFLAGS) -N -e main -Ttext 0 -o _forktest forktest.o ulib.o usys.o
 	$(OBJDUMP) -S _forktest > forktest.asm
-	_uthread: uthread.o uthread_switch.o
-         $(LD) $(LDFLAGS) -N -e main -Ttext 0 -o _uthread
-    uthread.o uthread_switch.o $(ULIB)
+_uthread: uthread.o uthread_switch.o
+         $(LD) $(LDFLAGS) -N -e main -Ttext 0 -o _uthread uthread.o uthread_switch.o $(ULIB)
          $(OBJDUMP) -S _uthread > uthread.asm
 
 mkfs: mkfs.c fs.h
