@@ -379,13 +379,13 @@ bmap(struct inode *ip, uint bn)
 
   uint i;
 
-  if(bn < NDIRECT){
+  if(bn < NDIRECT){ // DIRECT blocks
     if((addr = ip->addrs[bn]) == 0)
       ip->addrs[bn] = addr = balloc(ip->dev);
     return addr;
   }
-  bn -= NDIRECT;
 
+  bn -= NDIRECT; // Move cursor to start of singly-indirect.
   if(bn < NINDIRECT){
     // Load indirect block, allocating if necessary.
     if((addr = ip->addrs[NDIRECT]) == 0)
@@ -400,30 +400,44 @@ bmap(struct inode *ip, uint bn)
     return addr;
   }
 
-  bn -= NINDIRECT;
+  /*
+   *       [-]        // [Lv. 0] ip->addrs[NDIRECT + 1] (last one, reference of doubly-indirect.)
+   *      /...\
+   *    [-]...[-]     // [Lv. 1] Total of NINDIRECT(128) indirect block
+   *   /.........\
+   * [-].........[-]  // [Lv. 2] 128 direct blocks for each indirect block in Lv.1, thus 128 * 128 direct blocks.
+   */
+
+  bn -= NINDIRECT; // Move cursor to start of singly-indirect.
   if (bn < NINDIRECT * NINDIRECT) {
+    // Start Lv.0 alloc.
     if((addr = ip->addrs[NDIRECT + 1]) == 0)
       ip->addrs[NDIRECT + 1] = addr = balloc(ip->dev);
     bp = bread(ip->dev, addr);
     a = (uint*)bp->data;
+    // End Lv.0 alloc.
 
-    i = bn / NINDIRECT;
+    i = bn / NINDIRECT; // Calc index of indirect block in Lv.1, indicates which indirect block is in charge of bn.
 
+    // Start Lv.1 alloc
     if((addr = a[i]) == 0) {
       a[i] = addr = balloc(ip->dev);
       log_write(bp);
     }
     brelse(bp);
-
     bp = bread(ip->dev, addr);
     a = (uint*)bp->data;
+    // End Lv.1 alloc
 
-    i = bn % NINDIRECT;
+    i = bn % NINDIRECT; // Calc index of direct block inside the indirect block selected above.
+
+    // Start Lv.2 alloc
     if((addr = a[i]) == 0){
       a[i] = addr = balloc(ip->dev);
       log_write(bp);
     }
     brelse(bp);
+    // End Lv.2 alloc
 
     return addr;
   }
