@@ -373,8 +373,11 @@ iunlockput(struct inode *ip)
 static uint
 bmap(struct inode *ip, uint bn)
 {
+  // Need to set 11th pointer
   uint addr, *a;
   struct buf *bp;
+
+  uint i;
 
   if(bn < NDIRECT){
     if((addr = ip->addrs[bn]) == 0)
@@ -394,6 +397,34 @@ bmap(struct inode *ip, uint bn)
       log_write(bp);
     }
     brelse(bp);
+    return addr;
+  }
+
+  bn -= NINDIRECT;
+  if (bn < NINDIRECT * NINDIRECT) {
+    if((addr = ip->addrs[NDIRECT + 1]) == 0)
+      ip->addrs[NDIRECT + 1] = addr = balloc(ip->dev);
+    bp = bread(ip->dev, addr);
+    a = (uint*)bp->data;
+
+    i = bn / NINDIRECT;
+
+    if((addr = a[i]) == 0){
+      a[i] = addr = balloc(ip->dev);
+      log_write(bp);
+    }
+    brelse(bp);
+
+    bp = bread(ip->dev, addr);
+    a = (uint*)bp->data;
+
+    i = bn % NINDIRECT;
+    if((addr = a[i]) == 0){
+      a[i] = addr = balloc(ip->dev);
+      log_write(bp);
+    }
+    brelse(bp);
+
     return addr;
   }
 
