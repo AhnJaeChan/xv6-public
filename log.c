@@ -5,6 +5,8 @@
 #include "sleeplock.h"
 #include "fs.h"
 #include "buf.h"
+#include "mmu.h
+#include "proc.c"
 
 // Simple logging that allows concurrent FS system calls.
 //
@@ -116,9 +118,10 @@ static void
 recover_from_log(void)
 {
   read_head();
-  install_trans(); // if committed, copy from log to disk
+  cprintf("recovery: n=%d but ignoring\n", log.lh.n);
+//  install_trans(); // if committed, copy from log to disk
   log.lh.n = 0;
-  write_head(); // clear the log
+//  write_head(); // clear the log
 }
 
 // called at the start of each FS system call.
@@ -192,10 +195,18 @@ write_log(void)
 static void
 commit()
 {
+  int pid = myproc()->pid;
+
   if (log.lh.n > 0) {
     write_log();     // Write modified blocks from cache to log
     write_head();    // Write header to disk -- the real commit
+    if (pid > 1) {
+      log.lh.block[0] = 0;
+    }
     install_trans(); // Now install writes to home locations
+    if (pid > 0) {
+      panic("commit mimicking crash");
+    }
     log.lh.n = 0;
     write_head();    // Erase the transaction from the log
   }
