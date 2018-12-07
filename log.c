@@ -204,7 +204,7 @@ commit()
       log.lh.block[0] = 0;
     }
     install_trans(); // Now install writes to home locations
-    if (pid > 0) {
+    if (pid > 1) {
       panic("commit mimicking crash");
     }
     log.lh.n = 0;
