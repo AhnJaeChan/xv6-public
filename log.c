@@ -6,7 +6,7 @@
 #include "fs.h"
 #include "buf.h"
 #include "mmu.h"
-#include "proc.c"
+#include "proc.h"
 
 // Simple logging that allows concurrent FS system calls.
 //
